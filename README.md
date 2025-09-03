@@ -53,8 +53,7 @@ Run migrations: php artisan migrate
 
 ## Start the development server
 
-Run php artisan serve and access the app at:
-http://localhost:8000
+Run php artisan serve.
 
 
 
