@@ -1,26 +1,18 @@
 # Use official PHP + Apache image
 FROM php:8.2-apache
 
-# Install necessary extensions
-RUN docker-php-ext-install pdo pdo_sqlite
+# Install PHP extensions
+RUN apt-get update && apt-get install -y libsqlite3-dev \
+    && docker-php-ext-install pdo pdo_sqlite
 
-# Enable Apache mod_rewrite (needed for Laravel routing)
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Copy all files to the container
-COPY . /var/www/html
+# Copy project files
+COPY . /var/www/html/
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Set Laravel’s public directory as the Apache root
-RUN echo "<VirtualHost *:80>\n\
-    DocumentRoot /var/www/html/public\n\
-    <Directory /var/www/html/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-</VirtualHost>" > /etc/apache2/sites-available/000-default.conf
+# Set working directory to Laravel's public folder
+WORKDIR /var/www/html/public
 
 # Give permissions
 RUN chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
