@@ -21,8 +21,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Generate app key and cache config
-RUN php artisan key:generate
+
+
 
 # Expose port 80
 EXPOSE 80
