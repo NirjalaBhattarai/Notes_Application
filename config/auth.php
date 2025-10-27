@@ -41,7 +41,7 @@ return [
     ],
     
     'api' => [
-        'driver' => 'jwt',
+        'driver' => 'jwt', //use jwtA pkg tell how authentication is done
         'provider' => 'users',
     ],
 ],
@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', App\Models\User::class),//where to get user data from
         ],
 
         // 'users' => [

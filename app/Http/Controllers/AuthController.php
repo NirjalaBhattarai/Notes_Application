@@ -20,7 +20,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed'
         ]);
 
-
+                //this represent user model
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -46,12 +46,13 @@ public function login(Request $request)
         $credentials = $request->only('email', 'password');
 
 
-        if (!$token = JWTAuth::attempt($credentials)) {
+        if (!$token = JWTAuth::attempt($credentials)) {  //jwtauth::does two things check for user compare password if valid generate token
+
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
 
-        $user = Auth::user();
+        $user = Auth::user(); //it return the currently authenticated user
 
 
         return response()->json([

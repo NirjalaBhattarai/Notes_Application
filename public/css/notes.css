@@ -183,7 +183,7 @@
         }
         
         .modal-content {
-            background: white;
+            background: rgb(248, 246, 246);
             padding: 20px;
             border-radius: 8px;
             width: 500px;

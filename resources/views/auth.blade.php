@@ -72,7 +72,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000/api'; // Your Laravel API URL
+        const API_BASE = 'http://localhost:8000/api'; //  Laravel API url
         
         // Check if user is already logged in
         const token = localStorage.getItem('token');
@@ -174,8 +174,8 @@
                 const response = await fetch(`${API_BASE}/register`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json',   //body sending you is in json format
+                        'Accept': 'application/json'         //res in json
                     },
 
                     body: JSON.stringify({ 

@@ -17,6 +17,8 @@ Notes App is a web application where users can create, edit, and delete notes. I
 - SQLite  
 - A web server (Apache/Nginx) or PHP built-in server  
 
+
+
 ## Installation Instructions
 
 1. **Clone the repository**
@@ -39,6 +41,7 @@ Run composer install to install PHP packages.
 1. Run these 
 
 composer require tymon/jwt-auth
+
 
 php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 

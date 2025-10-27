@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notes App</title>
+<title>Notes App </title>
 <link rel="stylesheet" href="/css/notes.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -233,6 +233,7 @@ function switchCategory(catId){
     renderNotes();
 }
 
+
 function highlightActiveCategory(){
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
     const active = document.querySelector(`.category-btn[data-category="${state.activeCat}"]`);
@@ -268,24 +269,27 @@ async function fetchNotes(){
 
 
 function renderNotes(){
-    if(state.searching) return;
+    if(state.searching) return;//if you are searching then render stops immediately
+
     const list = state.activeCat ? state.notes.filter(n => n.category_id == state.activeCat) : state.notes;
-    drawNotes(list);
+    drawNotes(list);//if categories is active then the note belong to that cat is kept
 }
 
-function drawNotes(lst){
+//how the notes card will be displayed
+function drawNotes(lst){ 
     const grid = document.getElementById("notesGrid");
-    if(!lst || !lst.length){
+    if(!lst || !lst.length){//notes
         grid.innerHTML = state.searching ? '<div class="empty-state"><h3>No notes found</h3><p>Try another search.</p></div>' 
             : '<div class="empty-state"><h3>No notes yet</h3><p>Click "Add Note" to start.</p></div>';
         return;
     }
-    grid.innerHTML = lst.map(n => `
+    //if notes available it creates note card with title content 
+    grid.innerHTML = lst.map(n => ` 
         <div class="note-card">
             <div class="note-title">${safe(n.title||"Untitled")}</div>
             <div class="note-content">${safe(n.content||"No content")}</div>
 
-            <div class="note-meta"><span class="note-category">${safe(categoryName(n.category_id))}</span>    <span>${formatDate(n.created_at)}</span></div>
+            <div class="note-meta"><span class="note-category">${safe(categoryName(n.category_id))}</span> <span>${formatDate(n.created_at)}</span></div>
             <div class="note-actions">
                 <button class="btn-edit" onclick="editNote(${n.id})"><i class="fas fa-edit"></i> Edit</button>
 
@@ -297,10 +301,12 @@ function drawNotes(lst){
 
 function categoryName(id){ const c = state.categories.find(x=>x.id==id); return c ? c.name : "General"; }
 
+
 function bindUI(){
     document.getElementById("noteForm").addEventListener("submit", saveNote);
 
- document.getElementById("addNoteBtn").addEventListener("click", openNewNote);    document.getElementById("logoutBtn").addEventListener("click", logout);
+ document.getElementById("addNoteBtn").addEventListener("click", openNewNote);   
+  document.getElementById("logoutBtn").addEventListener("click", logout);
 
     document.getElementById("cancelNote").addEventListener("click", closeNoteModal);
     document.getElementById("cancelDelete").addEventListener("click", closeDeleteModal);
@@ -327,6 +333,7 @@ function searchNotes(){
     const results = state.notes.filter(n => (n.title||"").toLowerCase().includes(q));
     drawNotes(results);
 }
+
 
 function resetSearch(){ 
     document.getElementById("searchInput").value="";
@@ -406,8 +413,11 @@ async function saveNote(e){
 }
 
 function showModal(id){ document.getElementById(id).style.display="flex"; }
+
 function closeModal(id){ document.getElementById(id).style.display="none"; }
+
 function closeNoteModal(){ closeModal("addNoteModal"); }
+
 function closeDeleteModal(){ closeModal("deleteModal"); }
 
 function clearForm(){ 

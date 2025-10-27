@@ -17,7 +17,7 @@ Route::get('/test', function() {
     return response()->json(['message' => 'API is working!']);
 });
 
-// Use the auth:api middleware instead of jwt.auth
+
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/test-auth', function() {
         return response()->json(['message' => 'Auth working!', 'user' => auth()->user()->id]);

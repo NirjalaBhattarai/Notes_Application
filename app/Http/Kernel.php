@@ -11,7 +11,7 @@ protected $routeMiddleware = [
     'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     
-    // JWT Middleware - MAKE SURE THESE ARE ADDED
+    
     'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
     'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
 ];

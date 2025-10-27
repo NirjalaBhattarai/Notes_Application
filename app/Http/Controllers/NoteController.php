@@ -12,7 +12,7 @@ class NoteController extends Controller
     /**
      * Get all notes for the authenticated user
      */
-    public function index()
+    public function index()//fetch notes
     {
         try {
             // Get the logged-in user
@@ -24,7 +24,7 @@ class NoteController extends Controller
 
             // Get user's notes with category information
             $notes = Note::with(['category', 'user'])
-                ->where('user_id', $user->id)
+                ->where('user_id', $user->id) //fetch notes belong to that user
                 ->orderBy('created_at', 'desc')
                 ->get();
 
