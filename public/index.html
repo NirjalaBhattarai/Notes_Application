@@ -471,38 +471,49 @@
             document.getElementById('registerForm').classList.remove('hidden');
         }
         
-        async function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!email || !password) {
-                showAlert('authAlert', 'Please fill in all fields', false);
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_BASE}/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    showDashboard();
-                } else {
-                    showAlert('authAlert', data.error || 'Login failed', false);
-                }
-            } catch (error) {
-                showAlert('authAlert', 'Network error. Please try again.', false);
-            }
+       // Replace your current login function with this debug version
+async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showAlert('authAlert', 'Please fill in all fields', false);
+        return;
+    }
+    
+    console.log('Attempting login to:', `${API_BASE}/login`);
+    console.log('With data:', { email, password });
+    
+    try {
+        const response = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (response.ok) {
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            showDashboard();
+        } else {
+            showAlert('authAlert', data.error || 'Login failed', false);
         }
+    } catch (error) {
+        console.error('Full error details:', error);
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        showAlert('authAlert', 'Network error. Please try again.', false);
+    }
+}
         
         async function register() {
             const name = document.getElementById('registerName').value;
