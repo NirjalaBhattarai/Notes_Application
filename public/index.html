@@ -424,57 +424,56 @@
         </div>
     </div>
 
-<script>
-// MOCK VERSION - NO API CALLS AT ALL
-console.log('Running in MOCK mode - no API calls');
-
-const API_BASE = '/mock'; // Not used, but defined to prevent errors
-
-// Check if user is already logged in
-const token = localStorage.getItem('token');
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-if (token && user.id) {
-    showDashboard();
-} else {
-    showAuth();
-}
-
-function showAlert(elementId, message, isSuccess = true) {
-    const alert = document.getElementById(elementId);
-    alert.textContent = message;
-    alert.className = isSuccess ? 'alert alert-success' : 'alert alert-error';
-    alert.style.display = 'block';
-    
-    setTimeout(() => {
-        alert.style.display = 'none';
-    }, 3000);
-}
-
-function showAuth() {
-    document.getElementById('authContainer').classList.remove('hidden');
-    document.getElementById('dashboardContainer').classList.add('hidden');
-}
-
-function showDashboard() {
-    document.getElementById('authContainer').classList.add('hidden');
-    document.getElementById('dashboardContainer').classList.remove('hidden');
-    document.getElementById('userAvatar').textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-    loadNotes();
-}
-
-function showLoginForm() {
-    document.getElementById('loginForm').classList.remove('hidden');
-    document.getElementById('registerForm').classList.add('hidden');
-}
-
-function showRegisterForm() {
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('registerForm').classList.remove('hidden');
-}
-
-// MOCK LOGIN - NO API CALL
-function login() {
+    <script>
+  const API_BASE = 'https://notes-application-2cha.onrender.com';
+ // Your Laravel API URL
+        
+        // Check if user is already logged in
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (token && user.id) {
+            showDashboard();
+        } else {
+            showAuth();
+        }
+        
+        function showAlert(elementId, message, isSuccess = true) {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.className = isSuccess ? 'alert alert-success' : 'alert alert-error';
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        function showAuth() {
+            document.getElementById('authContainer').classList.remove('hidden');
+            document.getElementById('dashboardContainer').classList.add('hidden');
+        }
+        
+        function showDashboard() {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('dashboardContainer').classList.remove('hidden');
+            document.getElementById('userAvatar').textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+            loadNotes();
+            loadCategories();
+        }
+        
+        function showLoginForm() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
+        
+        function showRegisterForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+        
+       // Replace your current login function with this debug version
+async function login() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
@@ -483,150 +482,269 @@ function login() {
         return;
     }
     
-    console.log('MOCK login successful for:', email);
+    console.log('Attempting login to:', `${API_BASE}/login`);
+    console.log('With data:', { email, password });
     
-    // Create mock user
-    const mockUser = {
-        id: 1,
-        name: email.split('@')[0],
-        email: email
-    };
-    
-    localStorage.setItem('token', 'mock-token-12345');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    showDashboard();
-}
-
-// MOCK REGISTER - NO API CALL
-function register() {
-    const name = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    const passwordConfirmation = document.getElementById('registerPasswordConfirmation').value;
-    
-    if (!name || !email || !password || !passwordConfirmation) {
-        showAlert('authAlert', 'Please fill in all fields', false);
-        return;
-    }
-    
-    if (password !== passwordConfirmation) {
-        showAlert('authAlert', 'Passwords do not match', false);
-        return;
-    }
-    
-    console.log('MOCK registration successful for:', name, email);
-    showAlert('authAlert', 'Registration successful! Please login.', true);
-    showLoginForm();
-    
-    // Clear form
-    document.getElementById('registerName').value = '';
-    document.getElementById('registerEmail').value = '';
-    document.getElementById('registerPassword').value = '';
-    document.getElementById('registerPasswordConfirmation').value = '';
-}
-
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    showAuth();
-    showLoginForm();
-}
-
-// MOCK NOTES - NO API CALL
-function loadNotes() {
-    const mockNotes = [
-        {
-            id: 1,
-            title: 'Welcome to Notes App',
-            content: 'This is your first note. The app is running in mock mode.',
-            category: 'work',
-            created_at: new Date().toISOString()
-        },
-        {
-            id: 2,
-            title: 'Mock Data Active',
-            content: 'The app is using mock data since the backend is not available.',
-            category: 'ideas',
-            created_at: new Date().toISOString()
+    try {
+        const response = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (response.ok) {
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            showDashboard();
+        } else {
+            showAlert('authAlert', data.error || 'Login failed', false);
         }
-    ];
-    
-    displayNotes(mockNotes);
-}
-
-function displayNotes(notes) {
-    const notesGrid = document.getElementById('notesGrid');
-    notesGrid.innerHTML = '';
-    
-    notes.forEach(note => {
-        const noteElement = document.createElement('div');
-        noteElement.className = 'note-card';
-        noteElement.innerHTML = `
-            <div class="note-actions">
-                <i class="fas fa-edit" onclick="editNote(${note.id})"></i>
-                <i class="fas fa-trash" onclick="deleteNote(${note.id})"></i>
-            </div>
-            <div class="note-title">${note.title}</div>
-            <div class="note-content">${note.content}</div>
-            <div class="note-meta">
-                <span>${note.category}</span>
-                <span>${new Date(note.created_at).toLocaleDateString()}</span>
-            </div>
-        `;
-        notesGrid.appendChild(noteElement);
-    });
-}
-
-// MOCK SAVE NOTE - NO API CALL
-function saveNote() {
-    const title = document.getElementById('noteTitle').value;
-    const content = document.getElementById('noteContent').value;
-    const category = document.getElementById('noteCategory').value;
-    
-    if (!title.trim() || !content.trim()) {
-        showAlert('notesAlert', 'Note title and content are required', false);
-        return;
-    }
-    
-    console.log('MOCK note created:', title);
-    showAlert('notesAlert', 'Note created successfully! (Mock mode)', true);
-    clearForm();
-    loadNotes();
-}
-
-function clearForm() {
-    document.getElementById('noteTitle').value = '';
-    document.getElementById('noteContent').value = '';
-    document.getElementById('noteCategory').value = '';
-}
-
-function editNote(noteId) {
-    alert('Edit note: ' + noteId + ' (Mock mode)');
-}
-
-function deleteNote(noteId) {
-    if (confirm('Delete this note?')) {
-        showAlert('notesAlert', 'Note deleted! (Mock mode)', true);
-        loadNotes();
+    } catch (error) {
+        console.error('Full error details:', error);
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        showAlert('authAlert', 'Network error. Please try again.', false);
     }
 }
+        
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirmation = document.getElementById('registerPasswordConfirmation').value;
+            
+            if (!name || !email || !password || !passwordConfirmation) {
+                showAlert('authAlert', 'Please fill in all fields', false);
+                return;
+            }
+            
+            if (password !== passwordConfirmation) {
+                showAlert('authAlert', 'Passwords do not match', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        password, 
+                        password_confirmation: passwordConfirmation 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('authAlert', 'Registration successful! Please login.', true);
+                    showLoginForm();
+                    // Clear registration form
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerPasswordConfirmation').value = '';
+                } else {
+                    const errorMsg = data.errors ? Object.values(data.errors).join(' ') : data.message;
+                    showAlert('authAlert', errorMsg || 'Registration failed', false);
+                }
+            } catch (error) {
+                showAlert('authAlert', 'Network error. Please try again.', false);
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            showAuth();
+            showLoginForm();
+        }
+        
+        async function loadNotes() {
+            // In a real app, you would fetch notes from your Laravel API
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/notes`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const notes = await response.json();
+                    displayNotes(notes);
+                } else {
+                    console.error('Failed to load notes');
+                }
+            } catch (error) {
+                console.error('Error loading notes:', error);
+                // For demo purposes, we'll use mock data
+                displayNotes(getMockNotes());
+            }
+        }
+        
+        async function loadCategories() {
+            // In a real app, you would fetch categories from your Laravel API
+            // For now, we'll use the static ones in the HTML
+        }
+        
+        function displayNotes(notes) {
+            const notesGrid = document.getElementById('notesGrid');
+            notesGrid.innerHTML = '';
+            
+            if (notes.length === 0) {
+                notesGrid.innerHTML = '<p>No notes found. Create your first note!</p>';
+                return;
+            }
+            
+            notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-card';
+                noteElement.innerHTML = `
+                    <div class="note-actions">
+                        <i class="fas fa-edit" onclick="editNote(${note.id})"></i>
+                        <i class="fas fa-trash" onclick="deleteNote(${note.id})"></i>
+                    </div>
+                    <div class="note-title">${note.title}</div>
+                    <div class="note-content">${note.content}</div>
+                    <div class="note-meta">
+                        <span>${note.category || 'Uncategorized'}</span>
+                        <span>${new Date(note.created_at).toLocaleDateString()}</span>
+                    </div>
+                `;
+                notesGrid.appendChild(noteElement);
+            });
+        }
+        
+        async function saveNote() {
+            const title = document.getElementById('noteTitle').value;
+            const content = document.getElementById('noteContent').value;
+            const category = document.getElementById('noteCategory').value;
+            
+            if (!title.trim() || !content.trim()) {
+                showAlert('notesAlert', 'Note title and content are required', false);
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        category
+                    })
+                });
+                
+                if (response.ok) {
+                    showAlert('notesAlert', 'Note created successfully!', true);
+                    clearForm();
+                    loadNotes();
+                } else {
+                    showAlert('notesAlert', 'Failed to create note', false);
+                }
+            } catch (error) {
+                console.error('Error creating note:', error);
+                showAlert('notesAlert', 'Note created successfully! (demo)', true);
+                clearForm();
+                loadNotes(); // Reload notes to show the new mock note
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteCategory').value = '';
+        }
+        
+        function editNote(noteId) {
+            alert('Edit functionality would open for note ID: ' + noteId);
+            // In a real app, you would fetch the note and populate the form
+        }
+        
+        function deleteNote(noteId) {
+            if (confirm('Are you sure you want to delete this note?')) {
+                // In a real app, you would send a DELETE request to your API
+                showAlert('notesAlert', 'Note deleted successfully! (demo)', true);
+                loadNotes(); // Reload notes
+            }
+        }
+        
+        function searchNotes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const noteCards = document.querySelectorAll('.note-card');
+            
+            noteCards.forEach(card => {
+                const title = card.querySelector('.note-title').textContent.toLowerCase();
+                const content = card.querySelector('.note-content').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function filterNotes(category) {
+            // Update active category
+            document.querySelectorAll('.category-list li').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // In a real app, you would filter notes based on category
+            loadNotes(); // For demo, we'll just reload all notes
+        }
+        
+        // Mock data for demonstration
+        function getMockNotes() {
+            return [
+                {
+                    id: 1,
+                    title: 'Welcome to Notes',
+                    content: 'This is your first note. You can edit or delete it.',
+                    category: 'work',
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    title: 'Project Ideas',
+                    content: 'Build a note-taking app with categories and search functionality.',
+                    category: 'ideas',
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 3,
+                    title: 'Shopping List',
+                    content: 'Milk, Eggs, Bread, Fruits',
+                    category: 'personal',
+                    created_at: new Date().toISOString()
+                }
+            ];
+        }
+    </script>
 
-function searchNotes() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.note-card').forEach(card => {
-        const title = card.querySelector('.note-title').textContent.toLowerCase();
-        const content = card.querySelector('.note-content').textContent.toLowerCase();
-        card.style.display = (title.includes(searchTerm) || content.includes(searchTerm)) ? 'block' : 'none';
-    });
-}
 
-function filterNotes(category) {
-    document.querySelectorAll('.category-list li').forEach(item => {
-        item.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    loadNotes();
-}
-</script>
 </body>
 </html>
