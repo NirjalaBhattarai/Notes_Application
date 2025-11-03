@@ -99,7 +99,7 @@
 
 <script>
 let config = {
-    apiUrl: "http://localhost:8000/api",
+    apiUrl: "/api",
     defaultCats: [
         {id:1,name:"Work"}, 
         {id:2,name:"Personal"},

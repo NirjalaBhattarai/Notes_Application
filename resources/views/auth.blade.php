@@ -72,7 +72,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000/api'; //  Laravel API url
+   const API_BASE = '/api'; //  Laravel API url
         
         // Check if user is already logged in
         const token = localStorage.getItem('token');
